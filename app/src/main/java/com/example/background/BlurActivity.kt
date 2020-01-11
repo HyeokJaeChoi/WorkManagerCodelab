@@ -24,6 +24,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RadioGroup
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_blur.*
 
@@ -54,6 +55,21 @@ class BlurActivity : AppCompatActivity() {
         }
 
         setOnClickListeners()
+
+        viewModel.outputWorkInfos.observe(this, Observer {
+            if(it.isNullOrEmpty()) {
+                return@Observer
+            }
+
+            val workInfo = it[0]
+
+            if(workInfo.state.isFinished) {
+                showWorkFinished()
+            }
+            else {
+                showWorkInProgress()
+            }
+        })
     }
 
     private fun bindResources() {
