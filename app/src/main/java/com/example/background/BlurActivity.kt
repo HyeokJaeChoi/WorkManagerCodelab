@@ -16,6 +16,7 @@
 
 package com.example.background
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -65,6 +66,13 @@ class BlurActivity : AppCompatActivity() {
 
             if(workInfo.state.isFinished) {
                 showWorkFinished()
+
+                val outputImageUri = workInfo.outputData.getString(KEY_IMAGE_URI)
+
+                if(!outputImageUri.isNullOrEmpty()) {
+                    viewModel.setImageUri(outputImageUri)
+                    see_file_button.visibility = View.VISIBLE
+                }
             }
             else {
                 showWorkInProgress()
@@ -111,5 +119,13 @@ class BlurActivity : AppCompatActivity() {
 
     private fun setOnClickListeners() {
         go_button.setOnClickListener { viewModel.applyBlur(blurLevel) }
+        see_file_button.setOnClickListener {
+            viewModel.outputUri?.let {
+                val actionView = Intent(Intent.ACTION_VIEW, it)
+                actionView.resolveActivity(packageManager)?.run {
+                    startActivity(actionView)
+                }
+            }
+        }
     }
 }
