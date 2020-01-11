@@ -24,6 +24,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
+import com.example.background.workers.CleanupWorker
+import com.example.background.workers.SaveImageToFileWorker
 
 
 class BlurViewModel(application: Application) : AndroidViewModel(application) {
@@ -52,11 +54,21 @@ class BlurViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     internal fun applyBlur(blurLevel: Int) {
+        var continuation = workManager
+                .beginWith(OneTimeWorkRequest
+                        .from(CleanupWorker::class.java))
+
         val blurRequest = OneTimeWorkRequestBuilder<BlurWorker>()
                 .setInputData(createInputDataFromUri())
                 .build()
 
-        workManager.enqueue(blurRequest)
+        continuation = continuation.then(blurRequest)
+
+        val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java).build()
+
+        continuation = continuation.then(save)
+
+        continuation.enqueue()
     }
 
     private fun createInputDataFromUri(): Data {
