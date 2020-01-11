@@ -25,6 +25,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RadioGroup
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.activity_blur.*
 
 
 class BlurActivity : AppCompatActivity() {
@@ -52,6 +53,7 @@ class BlurActivity : AppCompatActivity() {
             Glide.with(this).load(imageUri).into(imageView)
         }
 
+        setOnClickListeners()
     }
 
     private fun bindResources() {
@@ -90,4 +92,8 @@ class BlurActivity : AppCompatActivity() {
                 R.id.radio_blur_lv_3 -> 3
                 else -> 1
             }
+
+    private fun setOnClickListeners() {
+        go_button.setOnClickListener { viewModel.applyBlur(blurLevel) }
+    }
 }
